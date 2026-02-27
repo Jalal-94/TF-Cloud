@@ -1,9 +1,7 @@
-## PUT TERRAFORM CLOUD BLOCK HERE!  ##
-
 terraform {
-  
-  
-  
+
+
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -33,10 +31,22 @@ resource "aws_instance" "tc_instance" {
   ami           = "ami-0c7c4e3c6b4941f0f"
   instance_type = "t2.micro"
 
+ebs_block_device {
+
+device_name= "sda"
+volume_size = 16
+}
+
+ebs_block_device {
+
+device_name = "sdb"
+volume_size = 20
+
+}
+
+
   tags = {
     Name = "TC-triggered-instance"
   }
 }
-
-
 
