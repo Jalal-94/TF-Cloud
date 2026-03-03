@@ -29,7 +29,7 @@ provider "aws" {
 
 resource "aws_instance" "tc_instance" {
   ami           = "ami-0c7c4e3c6b4941f0f"
-  instance_type = "t3.micro"
+  instance_type = "t2.micro"
 
 ebs_block_device {
 
