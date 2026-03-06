@@ -73,7 +73,7 @@ Name = "Main IGW"
 
 resource "aws_route_table" "internet" {
 
-vpc_id = aws_vpc.id
+vpc_id = aws_vpc.VPC1.id
 
 
 route {
