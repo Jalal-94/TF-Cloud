@@ -62,7 +62,7 @@ resource "aws_internet_gateway" "IGW" {
 
 vpc_id = aws_vpc.VPC1.id
 
-tags {
+tags = {
 
 Name = "Main IGW"
 
