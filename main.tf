@@ -13,6 +13,15 @@ terraform {
 
 }
 
+
+variable "public_key" {
+
+  description = "for SSH access"
+  type = string
+
+}
+
+
 data "aws_ami" "ubuntu" {
   most_recent = true
 
