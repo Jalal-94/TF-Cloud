@@ -40,6 +40,7 @@ tags = {
   created_time = formatdate("YYYY-MM-DD hh:mm ZZZ",timestamp())
 
 }
+}
 
 resource "aws_subnet" "Private" {
 
