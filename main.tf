@@ -163,7 +163,7 @@ cidr_blocks = ["0.0.0.0/0"]
 }
 
 
-resource "aws_route_table_assoiation" "Public_access" {
+resource "aws_route_table_association" "Public_access" {
 
 subnet_id = aws_subnet.Public.id
 route_table_id = aws_route_table.internet.id
