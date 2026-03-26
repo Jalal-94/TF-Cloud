@@ -118,7 +118,7 @@ public_key = var.public_key
 
 resource "aws_instance" "tc_instance" {
   ami     = data.aws_ami.ubuntu.id
-  instance_type = "t2.micro"
+  instance_type = "t3.micro"
   subnet_id = aws_subnet.Public.id
   key_name = aws_key_pair.ubuntu.key_name
   
