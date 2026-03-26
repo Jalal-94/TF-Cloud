@@ -160,8 +160,12 @@ protocol = "icmp"
 cidr_blocks = ["0.0.0.0/0"]
 
 }
-}
 
+tags = {
+
+Name = "VM1-SG"
+}
+}
 
 resource "aws_route_table_association" "Public_access" {
 
