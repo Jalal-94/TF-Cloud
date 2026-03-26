@@ -114,6 +114,63 @@ public_key = var.public_key
 
 }
 
+
+
+resource "aws_security_group" "SSH_SG1" {
+
+name = "allow_SSH"
+vpc_id = aws_vpc.VPC1.id
+
+ingress {
+
+from_port = 0
+to_port = 22
+protocol = "tcp"
+cidr_blocks = ["0.0.0.0/0"]
+
+}
+
+egress {
+
+from_port =  22
+to_port = 0
+protocol = "tcp"
+cidr_blocks = ["0.0.0.0/0"]
+
+
+
+}
+
+ingress {
+
+from_port = 0
+to_port = 0
+protocol = "icmp"
+cidr_blocks = ["0.0.0.0/0"]
+
+
+
+}
+
+egress {
+
+from_port = 0
+to_port = 0
+protocol = "icmp"
+cidr_blocks = ["0.0.0.0/0"]
+
+}
+}
+
+
+resource "aws_route_table_association" "Public_access" {
+
+subnet_id = aws_subnet.Public.id
+route_table_id = aws_route_table.internet.id
+
+}
+
+
 # Add .gitignore file in this directory with the terraform.tfvars
 
 resource "aws_instance" "tc_instance" {
@@ -121,6 +178,7 @@ resource "aws_instance" "tc_instance" {
   instance_type = "t3.micro"
   subnet_id = aws_subnet.Public.id
   key_name = aws_key_pair.ubuntu.key_name
+  vpc_security_group_ids = [aws_security_group.SSH_SG1.id]
   
   
   
@@ -129,4 +187,3 @@ resource "aws_instance" "tc_instance" {
     Name = "TC-triggered-instance"
   }
 }
-
