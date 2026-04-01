@@ -9,7 +9,7 @@ terraform {
     }
   }
 
-backend "S3" {
+backend "s3" {
 
 bucket = "MyTerraformState"
 key = "prod/terraform.tfstate"
