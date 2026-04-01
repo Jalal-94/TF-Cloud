@@ -1,3 +1,4 @@
+
 terraform {
 
 
@@ -9,17 +10,7 @@ terraform {
     }
   }
 
-backend "remote" {
 
-organization = "TF-Cloud-994"
-
-workspaces {
-
-  name = "TF-Cloud"
-
-}
-
-}
 }
 
 
@@ -48,37 +39,27 @@ data "aws_ami" "ubuntu" {
 }
 
 
-resource "aws_vpc" "VPC1" {
+module "VPC" {
 
-cidr_block = "10.0.0.0/16"
+source = "terraform-aws-modules/vpc/aws"
 
-tags = {
+cidr = "10.0.0.0/16"
+private_subnets = ["10.0.1.0/24"]
+public_subnets = ["10.0.2.0/24"]
 
-  Name = "VPC1"
-  created_time = formatdate("YYYY-MM-DD hh:mm ZZZ",timestamp())
 
-}
-}
-
-resource "aws_subnet" "Private" {
-
-vpc_id = aws_vpc.VPC1.id
-cidr_block = "10.0.1.0/24"
-
+  tags = {
+    Terraform = "true"
+    Environment = "dev"
+  }
 }
 
-resource "aws_subnet" "Public" {
 
-vpc_id = aws_vpc.VPC1.id
-cidr_block = "10.0.2.0/24"
-map_public_ip_on_launch = true
-
-}
 
 
 resource "aws_internet_gateway" "IGW" {
 
-vpc_id = aws_vpc.VPC1.id
+vpc_id = module.VPC.id
 
 tags = {
 
@@ -91,7 +72,7 @@ Name = "Main IGW"
 
 resource "aws_route_table" "internet" {
 
-vpc_id = aws_vpc.VPC1.id
+vpc_id = module.VPC.id
 
 
 route {
@@ -128,7 +109,7 @@ public_key = var.public_key
 resource "aws_security_group" "SSH_SG1" {
 
 name = "allow_SSH"
-vpc_id = aws_vpc.VPC1.id
+vpc_id = module.VPC.id
 
 ingress {
 
