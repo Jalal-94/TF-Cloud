@@ -6,7 +6,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
- version = "~> 6.37"     
+ version = "~> 5.0"     
     }
   }
 
@@ -159,7 +159,7 @@ Name = "VM1-SG"
 
 resource "aws_route_table_association" "Public_access" {
 
-subnet_id = aws_subnet.Public.id
+subnet_id = module.VPC.public_subnets[0]
 route_table_id = aws_route_table.internet.id
 
 }
@@ -170,7 +170,7 @@ route_table_id = aws_route_table.internet.id
 resource "aws_instance" "tc_instance" {
   ami     = data.aws_ami.ubuntu.id
   instance_type = "t3.micro"
-  subnet_id = aws_subnet.Public.id
+  subnet_id = module.VPC.public_subnets[0]
   key_name = aws_key_pair.ubuntu.key_name
   vpc_security_group_ids = [aws_security_group.SSH_SG1.id]
   
