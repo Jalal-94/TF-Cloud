@@ -43,7 +43,7 @@ module "VPC" {
 
 source = "terraform-aws-modules/vpc/aws"
 name = "Test_VPC"
-azs = ["us-east-1"]
+azs = ["us-east-1a"]
 
 cidr = "10.0.0.0/16"
 private_subnets = ["10.0.1.0/24"]
@@ -56,34 +56,6 @@ public_subnets = ["10.0.2.0/24"]
   }
 }
 
-
-
-
-resource "aws_internet_gateway" "IGW" {
-
-vpc_id = module.VPC.vpc_id
-
-tags = {
-
-Name = "Main IGW"
-
-}
-}
-
-
-
-resource "aws_route_table" "internet" {
-
-vpc_id = module.VPC.vpc_id
-
-
-route {
-
-cidr_block = "0.0.0.0/0"
-gateway_id = aws_internet_gateway.IGW.id
-
-}
-}
 
 
 
@@ -159,12 +131,7 @@ Name = "VM1-SG"
 }
 }
 
-resource "aws_route_table_association" "Public_access" {
 
-subnet_id = module.VPC.public_subnets[0]
-route_table_id = aws_route_table.internet.id
-
-}
 
 
 # Add .gitignore file in this directory with the terraform.tfvars
