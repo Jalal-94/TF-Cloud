@@ -9,16 +9,17 @@ terraform {
     }
   }
 
-backend "s3" {
+backend "remote" {
 
-bucket = "MyTerraformState"
-key = "prod/terraform.tfstate"
-region = "us-east-1"
-use_lockfile = true
-encrypt = true
+organization = "TF-Cloud-994"
+
+workspaces {
+
+  name = "TF-Cloud"
 
 }
 
+}
 }
 
 
