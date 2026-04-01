@@ -131,12 +131,7 @@ Name = "VM1-SG"
 }
 }
 
-resource "aws_route_table_association" "Public_access" {
 
-subnet_id = module.VPC.public_subnets[0]
-route_table_id = aws_route_table.internet.id
-
-}
 
 
 # Add .gitignore file in this directory with the terraform.tfvars
