@@ -6,7 +6,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
- version = "~> 6.37"     
+ version = "~> 5.0"     
     }
   }
 
@@ -59,7 +59,7 @@ public_subnets = ["10.0.2.0/24"]
 
 resource "aws_internet_gateway" "IGW" {
 
-vpc_id = module.VPC.id
+vpc_id = module.VPC.vpc_id
 
 tags = {
 
@@ -72,7 +72,7 @@ Name = "Main IGW"
 
 resource "aws_route_table" "internet" {
 
-vpc_id = module.VPC.id
+vpc_id = module.VPC.vpc_id
 
 
 route {
@@ -109,7 +109,7 @@ public_key = var.public_key
 resource "aws_security_group" "SSH_SG1" {
 
 name = "allow_SSH"
-vpc_id = module.VPC.id
+vpc_id = module.VPC.vpc_id
 
 ingress {
 
