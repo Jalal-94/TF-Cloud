@@ -139,6 +139,7 @@ Name = "VM1-SG"
 resource "aws_instance" "tc_instance" {
   ami     = data.aws_ami.ubuntu.id
   instance_type = "t3.micro"
+  associate_public_ip_address = true
   subnet_id = module.VPC.public_subnets[0]
   key_name = aws_key_pair.ubuntu.key_name
   vpc_security_group_ids = [aws_security_group.SSH_SG1.id]
