@@ -98,7 +98,7 @@ for_each = local.inbound_ports
 content {
 
 from_port = 0
-to_port = ingress.values
+to_port = ingress.value
 protocol = "tcp"
 cidr_blocks = ["0.0.0.0/0"]
 
@@ -111,7 +111,7 @@ for_each = local.outbound_ports
 
 content {
 
-from_port = egress.values
+from_port = egress.value
 to_port = 0
 protocol = "tcp"
 cidr_blocks = ["0.0.0.0/0"]
