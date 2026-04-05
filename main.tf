@@ -88,7 +88,7 @@ outbound_ports = [443,22,80]
 
 resource "aws_security_group" "SSH_SG1" {
 
-name = "allow_SSH"
+name = "allow_application_ports"
 vpc_id = module.VPC.vpc_id
 
 dynamic "ingress" {
@@ -117,7 +117,7 @@ protocol = "tcp"
 cidr_blocks = ["0.0.0.0/0"]
 }
 }
-}
+
 
 
 tags = {
