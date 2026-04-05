@@ -78,52 +78,47 @@ public_key = var.public_key
 
 }
 
+locals {
+
+inbound_ports = [443,22,80]
+outbound_ports = [443,22,80]
+
+}
 
 
 resource "aws_security_group" "SSH_SG1" {
 
-name = "allow_SSH"
+name = "allow_application_ports"
 vpc_id = module.VPC.vpc_id
 
-ingress {
+dynamic "ingress" {
 
-from_port = 22
-to_port = 22
+for_each = local.inbound_ports
+
+content {
+
+from_port = 0
+to_port = ingress.value
 protocol = "tcp"
 cidr_blocks = ["0.0.0.0/0"]
 
 }
+}
 
-egress {
+dynamic "egress" {
 
-from_port =  22
-to_port = 22
+for_each = local.outbound_ports
+
+content {
+
+from_port = egress.value
+to_port = 0
 protocol = "tcp"
 cidr_blocks = ["0.0.0.0/0"]
-
-
-
+}
 }
 
-ingress {
 
-from_port = 0
-to_port = 0
-protocol = "icmp"
-cidr_blocks = ["0.0.0.0/0"]
-
-
-
-}
-
-egress {
-
-from_port = 0
-to_port = 0
-protocol = "icmp"
-cidr_blocks = ["0.0.0.0/0"]
-
-}
 
 tags = {
 
@@ -140,6 +135,7 @@ resource "aws_instance" "tc_instance" {
   ami     = data.aws_ami.ubuntu.id
   instance_type = "t3.micro"
   associate_public_ip_address = true
+  count =2
   subnet_id = module.VPC.public_subnets[0]
   key_name = aws_key_pair.ubuntu.key_name
   vpc_security_group_ids = [aws_security_group.SSH_SG1.id]
@@ -148,6 +144,7 @@ resource "aws_instance" "tc_instance" {
   
 
   tags = {
-    Name = "TC-triggered-instance"
+    Name = "TC-triggered-instance-${count.index}"
+	time_created = formatdate("YYYY-MM-DD hh:mm:ss ZZZ",timestamp())
   }
 }
