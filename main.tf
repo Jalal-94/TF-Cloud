@@ -78,7 +78,7 @@ public_key = var.public_key
 
 }
 
-local {
+locals {
 
 inbound_ports = [443,22,80]
 outbound_ports = [443,22,80]
