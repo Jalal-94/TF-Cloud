@@ -93,7 +93,7 @@ vpc_id = module.VPC.vpc_id
 
 dynamic "ingress" {
 
-for_each = locals.inbound_ports
+for_each = local.inbound_ports
 
 content {
 
@@ -107,7 +107,7 @@ cidr_blocks = ["0.0.0.0/0"]
 
 dynamic "egress" {
 
-for_each = locals.outbound_ports
+for_each = local.outbound_ports
 
 content {
 
