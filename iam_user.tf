@@ -15,12 +15,43 @@ provider "aws" {
   region = "us-east-1"
 }
 
-resource "aws_iam_user" "user2" {
+data "aws_ami" "amazon_linux" {
   
-  name = "Jalal-94"
+ most_recent = true
+ owners = ["amazon"]
+
+ filter {
+   name = "name"
+   values = ["al2023-ami-*-x86_64"]
+ }
+
+ filter {
+
+name = "virtualization-type"
+values = ["hvm"]
+
+ }
+  
+}
+
+
+
+resource "aws_instance" "LAB1" {
+
+  ami = data.aws_ami.amazon_linux.id
+  count = 3
+  instance_type = var.instance_type
 
   tags = {
-
-    description = "created via TC VCS" 
+    name = "instance-${count.index}"
   }
+
+lifecycle {
+  precondition {
+    condition = !contains(["t2.micro","t2.micro"],var.instance_type)
+    error_message = "instance type not matches the allowed t2.micro or t3.micro got ${var.instance_type} instead"
+  }
+}
+
+  
 }
