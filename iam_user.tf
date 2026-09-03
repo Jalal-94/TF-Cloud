@@ -55,3 +55,7 @@ lifecycle {
 
   
 }
+
+variable "instance_type" {
+  
+}
