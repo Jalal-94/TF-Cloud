@@ -57,5 +57,6 @@ lifecycle {
 }
 
 variable "instance_type" {
-  
+
+ defaultype = "t1.micro" 
 }
