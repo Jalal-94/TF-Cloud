@@ -50,7 +50,3 @@ tags = {
  enviroment = var.enviroment
 }
 }
-
-
-
-
