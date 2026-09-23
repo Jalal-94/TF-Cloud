@@ -1,7 +1,7 @@
 required_providers {
   aws = {
     source = "hashicorp/aws"
-version = "6.66.0"
+    version = "6.61.6"
   }
 }
 
@@ -19,7 +19,7 @@ provider "aws" "configurations" {
 
 variable "users_list" {
   
-  type = list()
+  type = list(string)
 
 }
 
@@ -28,28 +28,43 @@ variable "aws_access_key" {
 }
 
 
-variable "aws_secret_key" {
+variable "aws_secret_access" {
   
 }
 
-variable "enviroment" {
+variable "environment" {
+  
+}
+
+variable "region" {
   
 }
 
 
 component "iam_users" {
   
-   source  = "terraform-aws-modules/iam/aws"
+   source  = "terraform-aws-modules/iam/aws//modules/iam-user"
   version = "6.8.2"
+
+
+
+
 
 for_each = toset(var.users_list)
 
-  Name = each.key
 
+
+inputs = {
+
+  provider = aws.configurations
+  name = each.key
 tags = {
 
- enviroment = var.enviroment
+ enviroment = var.environment
 }
 }
+}
+
+
 
 
