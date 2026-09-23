@@ -12,7 +12,7 @@ deployment "prod" {
   users_list = ["bob","alice"]
   region = "us-east-2"
   environment = "prof"
-  aws_access_key = store.varset.AWS_Creds.AWS_ACCESS_KEY.AWS_ACCESS_KEY_ID
+  aws_access_key = store.varset.AWS_Creds.AWS_ACCESS_KEY_ID
   aws_secret_key = store.varset.AWS_Creds.AWS_SECRET_ACCESS_KEY
 
 }
