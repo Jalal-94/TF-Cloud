@@ -52,11 +52,14 @@ component "iam_users" {
 
 for_each = toset(var.users_list)
 
+providers = {
 
+aws = provider.aws.configurations
 
+}
 inputs = {
 
-  provider = aws.configurations
+  
   name = each.key
 tags = {
 
