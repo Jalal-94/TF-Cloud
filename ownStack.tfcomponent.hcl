@@ -25,11 +25,13 @@ variable "users_list" {
 
 variable "aws_access_key" {
   type = string
+ ephemeral = true
 }
 
 
 variable "aws_secret_access" {
   type = string
+ ephemeral = true
 }
 
 variable "environment" {
