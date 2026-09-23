@@ -1,7 +1,7 @@
 required_providers {
   aws = {
     source = "hashicorp/aws"
-    version = "6.66.0"
+    version = "6.61.6"
   }
 }
 
@@ -24,20 +24,20 @@ variable "users_list" {
 }
 
 variable "aws_access_key" {
-  
+  type = string
 }
 
 
 variable "aws_secret_access" {
-  
+  type = string
 }
 
 variable "environment" {
-  
+  type = string
 }
 
 variable "region" {
-  
+  type = string
 }
 
 
