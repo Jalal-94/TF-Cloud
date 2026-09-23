@@ -11,9 +11,9 @@ deployment "prod" {
     
   users_list = ["bob","alice"]
   region = "us-east-2"
-  environment = "prof"
+  environment = "prod"
   aws_access_key = store.varset.AWS_Creds.AWS_ACCESS_KEY_ID
-  aws_secret_key = store.varset.AWS_Creds.AWS_SECRET_ACCESS_KEY
+  aws_secret_access = store.varset.AWS_Creds.AWS_SECRET_ACCESS_KEY
 
 }
 
@@ -31,7 +31,7 @@ deployment "dev" {
  region = "us-east-2"
  environment = "dev"
  aws_access_key = store.varset.AWS_Creds.AWS_ACCESS_KEY_ID
- aws_secret_key = store.varset.AWS_Creds.AWS_SECRET_ACCESS_KEY
+ aws_secret_access = store.varset.AWS_Creds.AWS_SECRET_ACCESS_KEY
 }
 #destroy = true
 }
