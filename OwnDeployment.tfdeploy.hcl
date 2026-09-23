@@ -1,5 +1,5 @@
 store "varset" "AWS_Creds" {
- name = "AWS Credentials"
+ name = "AWS_Creds"
  category = "env"
 
 }
