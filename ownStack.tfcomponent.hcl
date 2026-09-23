@@ -1,7 +1,7 @@
 required_providers {
   aws = {
     source = "hashicorp/aws"
-    version = "6.61.6"
+    version = "6.66.0"
   }
 }
 
