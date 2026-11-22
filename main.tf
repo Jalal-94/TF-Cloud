@@ -1,44 +1,57 @@
 terraform {
 
+  backend "s3" {
+    bucket = "jalal-13102026"
+    key = "dev/terraform.tfstate"
+    region = "us-east-1"
 
-
+  }
   required_providers {
     aws = {
-      source  = "hashicorp/aws"
- version = "~> 5.0"     
+        source = "hashicorp/aws"
+        version = ">= 6.60.6"
     }
+
   }
 
-backend "remote" {
-
-organization = "TF-Cloud-994"
-
-workspaces {
-
-  name = "TF-Cloud"
-
+  required_version = ">= 1.15.0"
 }
 
-}
+provider "aws" {
+
+  region = "us-east-1"
 }
 
 
-variable "public_key" {
 
-  description = "for SSH access"
-  type = string
+module "aws_vpc" {
+  source = "terraform-aws-modules/vpc/aws"
+
+  name = "lab-vpc"
+  cidr = "10.0.0.0/16"
 
 }
 
+resource "aws_subnet" "nets" {
+  vpc_id = module.aws_vpc.vpc_id
 
-data "aws_ami" "ubuntu" {
+  for_each = toset(cidrsubnets(module.aws_vpc.vpc_cidr_block,"8","8"))
+  cidr_block = each.value
+
+  tags = {
+
+    Name = "private-${each.value}"
+  }
+}
+
+
+data "aws_ami" "amazon_linux" {
   most_recent = true
-
-  owners = ["099720109477"] # Canonical (official Ubuntu owner ID)
+  owners      = ["amazon"]
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+    values = ["al2023-ami-2023.*-x86_64"]
   }
 
   filter {
@@ -48,155 +61,60 @@ data "aws_ami" "ubuntu" {
 }
 
 
-resource "aws_vpc" "VPC1" {
 
-cidr_block = "10.0.0.0/16"
+resource "aws_security_group" "SG1" {
 
-tags = {
-
-  Name = "VPC1"
-  created_time = formatdate("YYYY-MM-DD hh:mm ZZZ",timestamp())
-
-}
-}
-
-resource "aws_subnet" "Private" {
-
-vpc_id = aws_vpc.VPC1.id
-cidr_block = "10.0.1.0/24"
-
-}
-
-resource "aws_subnet" "Public" {
-
-vpc_id = aws_vpc.VPC1.id
-cidr_block = "10.0.2.0/24"
-map_public_ip_on_launch = true
-
-}
+  vpc_id = module.aws_vpc.vpc_id
 
 
-resource "aws_internet_gateway" "IGW" {
+ dynamic "ingress" {
+   for_each = toset(values(var.security_ingress))
+   content {
 
-vpc_id = aws_vpc.VPC1.id
+     from_port = ingress.value
+     to_port = ingress.value
+     protocol = "tcp"
+     cidr_blocks = ["0.0.0.0/0"]
 
-tags = {
 
-Name = "Main IGW"
+   }
+ }
 
-}
-}
+ dynamic "egress" {
+   for_each = toset(values(var.security_egress))
+   content {
+
+    from_port = egress.value
+    to_port = egress.value
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
 
 
 
-resource "aws_route_table" "internet" {
-
-vpc_id = aws_vpc.VPC1.id
-
-
-route {
-
-cidr_block = "0.0.0.0/0"
-gateway_id = aws_internet_gateway.IGW.id
-
-}
-}
-
-
-
-# Variable blocks directly within the main.tf. No arguments necessary.
-#variable "aws_access_key" {}
-#variable "aws_secret_key" {}
-
-# provider arguments call on the variables which then call on terraform.tfvars for the values.
-provider "aws" {
-  #access_key = var.aws_access_key
-  #secret_key = var.aws_secret_key
-  region     = "us-east-1"
-}
-
-
-resource "aws_key_pair" "ubuntu" {
-
-key_name = "ubuntu"
-public_key = var.public_key
+   }
+ }
 
 }
 
+resource "aws_instance" "LAB" {
+  ami = "ami-00adafae70b8029d8"
+  subnet_id = aws_subnet.nets["10.0.1.0/24"].id
+  instance_type = var.instance_type
+  vpc_security_group_ids = [aws_security_group.SG1.id]
+  depends_on = [ aws_security_group.SG1 ]
+  count = 2
 
 
-resource "aws_security_group" "SSH_SG1" {
-
-name = "allow_SSH"
-vpc_id = aws_vpc.VPC1.id
-
-ingress {
-
-from_port = 22
-to_port = 22
-protocol = "tcp"
-cidr_blocks = ["0.0.0.0/0"]
-
-}
-
-egress {
-
-from_port =  22
-to_port = 22
-protocol = "tcp"
-cidr_blocks = ["0.0.0.0/0"]
+  lifecycle {
 
 
-
-}
-
-ingress {
-
-from_port = 0
-to_port = 0
-protocol = "icmp"
-cidr_blocks = ["0.0.0.0/0"]
-
-
-
-}
-
-egress {
-
-from_port = 0
-to_port = 0
-protocol = "icmp"
-cidr_blocks = ["0.0.0.0/0"]
-
-}
-
-tags = {
-
-Name = "VM1-SG"
-}
-}
-
-resource "aws_route_table_association" "Public_access" {
-
-subnet_id = aws_subnet.Public.id
-route_table_id = aws_route_table.internet.id
-
-}
-
-
-# Add .gitignore file in this directory with the terraform.tfvars
-
-resource "aws_instance" "tc_instance" {
-  ami     = data.aws_ami.ubuntu.id
-  instance_type = "t3.micro"
-  subnet_id = aws_subnet.Public.id
-  key_name = aws_key_pair.ubuntu.key_name
-  vpc_security_group_ids = [aws_security_group.SSH_SG1.id]
-  
-  
-  
-
-  tags = {
-    Name = "TC-triggered-instance"
+    postcondition {
+      condition = self.instance_state=="running"
+      error_message = "state not running please check"
+    }
   }
+  tags = {
+    Name = "VM-${count.index}"
+  }
+
 }
